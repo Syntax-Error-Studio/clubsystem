@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 报名数据访问层映射文件 - 重点体现关联映射 -->
+<mapper namespace="com.clubsystem.mapper.SignupMapper">
+
+    <!-- 定义 Signup 结果映射（不包含关联对象） -->
+    <resultMap id="signupResultMap" type="Signup">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="activity_id" property="activityId"/>
+        <result column="signup_time" property="signupTime"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <!-- 定义 Signup 结果映射（包含关联的User对象 - 一对一关联） -->
+    <resultMap id="signupWithUserResultMap" type="Signup">
+        <id column="s_id" property="id"/>
+        <result column="s_user_id" property="userId"/>
+        <result column="s_activity_id" property="activityId"/>
+        <result column="s_signup_time" property="signupTime"/>
+        <result column="s_status" property="status"/>
+        <!-- 关联 User 对象 -->
+        <association property="user" javaType="User">
+            <id column="u_id" property="id"/>
+            <result column="u_username" property="username"/>
+            <result column="u_password" property="password"/>
+            <result column="u_real_name" property="realName"/>
+            <result column="u_student_no" property="studentNo"/>
+            <result column="u_phone" property="phone"/>
+            <result column="u_role" property="role"/>
+            <result column="u_create_time" property="createTime"/>
+        </association>
+    </resultMap>
+
+    <!-- 定义 Signup 结果映射（包含关联的Activity对象 - 一对一关联） -->
+    <resultMap id="signupWithActivityResultMap" type="Signup">
+        <id column="s_id" property="id"/>
+        <result column="s_user_id" property="userId"/>
+        <result column="s_activity_id" property="activityId"/>
+        <result column="s_signup_time" property="signupTime"/>
+        <result column="s_status" property="status"/>
+        <!-- 关联 Activity 对象 -->
+        <association property="activity" javaType="Activity">
+            <id column="a_id" property="id"/>
+            <result column="a_category_id" property="categoryId"/>
+            <result column="a_title" property="title"/>
+            <result column="a_content" property="content"/>
+            <result column="a_location" property="location"/>
+            <result column="a_start_time" property="startTime"/>
+            <result column="a_end_time" property="endTime"/>
+            <result column="a_deadline" property="deadline"/>
+            <result column="a_max_count" property="maxCount"/>
+            <result column="a_current_count" property="currentCount"/>
+            <result column="a_creator_id" property="creatorId"/>
+            <result column="a_status" property="status"/>
+            <result column="a_cover_image" property="coverImage"/>
+            <result column="a_create_time" property="createTime"/>
+        </association>
+    </resultMap>
+
+    <!-- 定义 Signup 结果映射（包含User和Activity - 完整关联） -->
+    <resultMap id="signupWithAllResultMap" type="Signup">
+        <id column="s_id" property="id"/>
+        <result column="s_user_id" property="userId"/>
+        <result column="s_activity_id" property="activityId"/>
+        <result column="s_signup_time" property="signupTime"/>
+        <result column="s_status" property="status"/>
+        <!-- 关联 User 对象 -->
+        <association property="user" javaType="User">
+            <id column="u_id" property="id"/>
+            <result column="u_username" property="username"/>
+            <result column="u_password" property="password"/>
+            <result column="u_real_name" property="realName"/>
+            <result column="u_student_no" property="studentNo"/>
+            <result column="u_phone" property="phone"/>
+            <result column="u_role" property="role"/>
+            <result column="u_create_time" property="createTime"/>
+        </association>
+        <!-- 关联 Activity 对象 -->
+        <association property="activity" javaType="Activity">
+            <id column="a_id" property="id"/>
+            <result column="a_category_id" property="categoryId"/>
+            <result column="a_title" property="title"/>
+            <result column="a_content" property="content"/>
+            <result column="a_location" property="location"/>
+            <result column="a_start_time" property="startTime"/>
+            <result column="a_end_time" property="endTime"/>
+            <result column="a_deadline" property="deadline"/>
+            <result column="a_max_count" property="maxCount"/>
+            <result column="a_current_count" property="currentCount"/>
+            <result column="a_creator_id" property="creatorId"/>
+            <result column="a_status" property="status"/>
+            <result column="a_cover_image" property="coverImage"/>
+            <result column="a_create_time" property="createTime"/>
+        </association>
+    </resultMap>
+
+    <!-- 新增报名 -->
+    <insert id="addSignup" parameterType="Signup" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO signup (user_id, activity_id, signup_time, status)
+        VALUES (#{userId}, #{activityId}, #{signupTime}, #{status})
+    </insert>
+
+    <!-- 删除报名 -->
+    <delete id="deleteSignupById" parameterType="int">
+        DELETE FROM signup WHERE id = #{id}
+    </delete>
+
+    <!-- 查询所有报名记录（不含关联对象） -->
+    <select id="getAllSignups" resultMap="signupResultMap">
+        SELECT id, user_id, activity_id, signup_time, status FROM signup ORDER BY signup_time DESC
+    </select>
+
+    <!-- 根据ID查询报名记录（包含User和Activity关联对象 - 体现关联映射） -->
+    <select id="getSignupById" parameterType="int" resultMap="signupWithAllResultMap">
+        SELECT
+            s.id s_id, s.user_id s_user_id, s.activity_id s_activity_id, s.signup_time s_signup_time, s.status s_status,
+            u.id u_id, u.username u_username, u.password u_password, u.real_name u_real_name, u.student_no u_student_no, u.phone u_phone, u.role u_role, u.create_time u_create_time,
+            a.id a_id, a.category_id a_category_id, a.title a_title, a.content a_content, a.location a_location, a.start_time a_start_time, a.end_time a_end_time, a.deadline a_deadline, a.max_count a_max_count, a.current_count a_current_count, a.creator_id a_creator_id, a.status a_status, a.cover_image a_cover_image, a.create_time a_create_time
+        FROM signup s
+        LEFT JOIN `user` u ON s.user_id = u.id
+        LEFT JOIN activity a ON s.activity_id = a.id
+        WHERE s.id = #{id}
+    </select>
+
+    <!-- 更新报名记录 -->
+    <update id="updateSignup" parameterType="Signup">
+        UPDATE signup SET
+            status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据用户ID查询报名记录（带关联信息 - 体现关联映射） -->
+    <select id="getSignupsByUserId" parameterType="int" resultMap="signupWithActivityResultMap">
+        SELECT
+            s.id s_id, s.user_id s_user_id, s.activity_id s_activity_id, s.signup_time s_signup_time, s.status s_status,
+            a.id a_id, a.category_id a_category_id, a.title a_title, a.content a_content, a.location a_location, a.start_time a_start_time, a.end_time a_end_time, a.deadline a_deadline, a.max_count a_max_count, a.current_count a_current_count, a.creator_id a_creator_id, a.status a_status, a.cover_image a_cover_image, a.create_time a_create_time
+        FROM signup s
+        LEFT JOIN activity a ON s.activity_id = a.id
+        WHERE s.user_id = #{userId}
+        ORDER BY s.signup_time DESC
+    </select>
+
+    <!-- 根据活动ID查询报名记录（带关联信息 - 体现关联映射） -->
+    <select id="getSignupsByActivityId" parameterType="int" resultMap="signupWithUserResultMap">
+        SELECT
+            s.id s_id, s.user_id s_user_id, s.activity_id s_activity_id, s.signup_time s_signup_time, s.status s_status,
+            u.id u_id, u.username u_username, u.password u_password, u.real_name u_real_name, u.student_no u_student_no, u.phone u_phone, u.role u_role, u.create_time u_create_time
+        FROM signup s
+        LEFT JOIN `user` u ON s.user_id = u.id
+        WHERE s.activity_id = #{activityId}
+        ORDER BY s.signup_time DESC
+    </select>
+
+    <!-- 根据用户和活动查询报名记录 -->
+    <select id="getSignupByUserAndActivity" resultMap="signupResultMap">
+        SELECT id, user_id, activity_id, signup_time, status
+        FROM signup
+        WHERE user_id = #{userId} AND activity_id = #{activityId}
+        LIMIT 1
+    </select>
+
+    <!-- 获取指定活动的报名人数 -->
+    <select id="getSignupCountByActivityId" parameterType="int" resultType="int">
+        SELECT COUNT(*) FROM signup WHERE activity_id = #{activityId}
+    </select>
+
+    <!-- 根据活动ID删除所有报名记录 -->
+    <delete id="deleteSignupsByActivityId" parameterType="int">
+        DELETE FROM signup WHERE activity_id = #{activityId}
+    </delete>
+
+</mapper>
+
+

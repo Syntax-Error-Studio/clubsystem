@@ -1,0 +1,30 @@
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Build output
+target/
+out/
+build/
+
+# Compiled files
+*.class
+*.war
+
+# Logs
+*.log
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# CLI tools
+.codely/
+.codely-cli/
+.workbuddy/
+
+# Personal / sensitive files
+*.docx
+*.zip
+db.properties.bak

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 活动数据访问层映射文件 -->
+<mapper namespace="com.clubsystem.mapper.ActivityMapper">
+
+    <!-- 定义 Activity 结果映射 -->
+    <resultMap id="activityResultMap" type="Activity">
+        <id column="id" property="id"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="location" property="location"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="deadline" property="deadline"/>
+        <result column="max_count" property="maxCount"/>
+        <result column="current_count" property="currentCount"/>
+        <result column="creator_id" property="creatorId"/>
+        <result column="status" property="status"/>
+        <result column="cover_image" property="coverImage"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!-- 新增活动 -->
+    <insert id="addActivity" parameterType="Activity" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO activity (category_id, title, content, location, start_time, end_time, deadline, max_count, current_count, creator_id, status, cover_image, create_time)
+        VALUES (#{categoryId}, #{title}, #{content}, #{location}, #{startTime}, #{endTime}, #{deadline}, #{maxCount}, #{currentCount}, #{creatorId}, #{status}, #{coverImage}, #{createTime})
+    </insert>
+
+    <!-- 删除活动 -->
+    <delete id="deleteActivityById" parameterType="int">
+        DELETE FROM activity WHERE id = #{id}
+    </delete>
+
+    <!-- 查询所有活动 -->
+    <select id="getAllActivities" resultMap="activityResultMap">
+        SELECT * FROM activity ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据ID查询活动 -->
+    <select id="getActivityById" parameterType="int" resultMap="activityResultMap">
+        SELECT * FROM activity WHERE id = #{id}
+    </select>
+
+    <!-- 更新活动 -->
+    <update id="updateActivity" parameterType="Activity">
+        UPDATE activity SET
+            category_id = #{categoryId},
+            title = #{title},
+            content = #{content},
+            location = #{location},
+            start_time = #{startTime},
+            end_time = #{endTime},
+            deadline = #{deadline},
+            max_count = #{maxCount},
+            current_count = #{currentCount},
+            creator_id = #{creatorId},
+            status = #{status},
+            cover_image = #{coverImage}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据分类查询活动 -->
+    <select id="getActivitiesByCategory" parameterType="int" resultMap="activityResultMap">
+        SELECT * FROM activity WHERE category_id = #{categoryId} ORDER BY create_time DESC
+    </select>
+
+    <!-- 检查活动是否已满 -->
+    <select id="isActivityFull" parameterType="int" resultType="boolean">
+        SELECT (max_count &lt;= current_count) FROM activity WHERE id = #{activityId}
+    </select>
+
+    <!-- 报名后活动当前人数加 1 -->
+    <update id="increaseCurrentCount" parameterType="int">
+        UPDATE activity SET current_count = current_count + 1 WHERE id = #{id}
+    </update>
+
+</mapper>
+
